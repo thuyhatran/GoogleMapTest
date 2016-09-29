@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -25,8 +26,12 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.GroundOverlay;
+import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Marker;
 
@@ -34,7 +39,8 @@ import com.google.android.gms.maps.model.Marker;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+        LocationListener,
+        GoogleMap.OnGroundOverlayClickListener {
 
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
@@ -96,6 +102,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+
+
+
+
     }
 
 
@@ -130,6 +140,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             buildGoogleApiClient();
             mMap.setMyLocationEnabled(true);
         }
+
+        //Add an Overlay Image
+        LatLng montreal = new LatLng(45.52, -73.56);
+        LatLngBounds bounds = new LatLngBounds(
+                //  new LatLng(-44, 113), new LatLng(-10, 154)
+                montreal, new LatLng(montreal.latitude + 1, montreal.longitude + 1)
+        ); // get a bounds
+
+        MapActivitiesMethods.addOverlayImage(mMap,bounds,R.drawable.image1);
+
+        //Listeners
+        mMap.setOnGroundOverlayClickListener(this);
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -229,5 +251,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
 
+    }
+
+    @Override
+    public void onGroundOverlayClick(GroundOverlay groundOverlay) {
+        Toast.makeText(this, "The user tapped on image on the map at: " + groundOverlay.toString() ,
+                Toast.LENGTH_SHORT).show();
+
+        //groundOverlay.setImage(BitmapDescriptorFactory.fromResource(R.drawable.image2));
+        //groundOverlay.setVisible(false);
+        groundOverlay.remove();
     }
 }
