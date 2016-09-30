@@ -40,7 +40,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener,
-        GoogleMap.OnGroundOverlayClickListener {
+        GoogleMap.OnGroundOverlayClickListener,
+        GoogleMap.OnCameraMoveStartedListener,
+        GoogleMap.OnCameraMoveListener,
+        GoogleMap.OnMapClickListener {
 
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
@@ -152,6 +155,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //Listeners
         mMap.setOnGroundOverlayClickListener(this);
+        mMap.setOnCameraMoveStartedListener(this);
+        mMap.setOnCameraMoveListener(this);
+        mMap.setOnMapClickListener(this);
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -261,5 +267,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //groundOverlay.setImage(BitmapDescriptorFactory.fromResource(R.drawable.image2));
         //groundOverlay.setVisible(false);
         groundOverlay.remove();
+    }
+
+    @Override
+    public void onCameraMove() {
+
+    }
+
+    @Override
+    public void onCameraMoveStarted(int reason) {
+        if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
+            Toast.makeText(this, "The user gestured on the map.",
+                    Toast.LENGTH_SHORT).show();
+      /*  } else if (reason == GoogleMap.OnCameraMoveStartedListener
+                .REASON_API_ANIMATION) {
+            Toast.makeText(this, "The user tapped something on the map.",
+                    Toast.LENGTH_SHORT).show();  */
+        } else if (reason == GoogleMap.OnCameraMoveStartedListener
+                .REASON_DEVELOPER_ANIMATION) {
+            Toast.makeText(this, "The app moved the camera.",
+                    Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+
+        Toast.makeText(this, "The user tapped on the map at: " + latLng.latitude + "  " + latLng.longitude,
+                Toast.LENGTH_SHORT).show();
+
     }
 }
